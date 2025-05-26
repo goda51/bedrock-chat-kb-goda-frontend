@@ -61,7 +61,8 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ onClose }) => {
           table: result.data.table || undefined
         }
       ]);
-      if (result.data.internal_answer || result.data.external_answer) {
+      if ((result.data.internal_answer && result.data.internal_answer !== "") || 
+          (result.data.external_answer && result.data.external_answer !== "")) {
         setApiMessages(result.data.messages || []);
       }
     } catch (error) {
