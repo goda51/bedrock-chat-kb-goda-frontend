@@ -8,17 +8,25 @@ const WindowContainer = styled.div`
   width: 900px;
   max-width: 98vw;
   height: 750px;
-  background: #fff;
-  border-radius: 18px 18px 8px 8px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 24px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05);
   display: flex;
   flex-direction: column;
   overflow: hidden;
   margin-bottom: 12px;
-  animation: fadeInUp 0.3s cubic-bezier(0.4,0,0.2,1);
+  animation: fadeInUp 0.5s cubic-bezier(0.15, 1, 0.3, 1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 50px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(0, 0, 0, 0.05);
+  }
 
   @keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(40px); }
+    from { opacity: 0; transform: translateY(60px); }
     to { opacity: 1; transform: translateY(0); }
   }
 `;

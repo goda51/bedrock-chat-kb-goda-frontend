@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import styled, { keyframes } from 'styled-components';
 import ChatWindow from './ChatWindow';
 import { FaComments } from 'react-icons/fa';
+import ChatWindowWrapper from './ChatWindowWrapper';
 
 const pulse = keyframes`
   0% { transform: scale(1); }
@@ -38,13 +39,30 @@ const ToggleButton = styled.button`
 
 const ChatbotWidget: React.FC = () => {
   const [open, setOpen] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
+
+  const handleToggle = () => {
+    if (open) {
+      setIsClosing(true);
+      setTimeout(() => {
+        setOpen(false);
+        setIsClosing(false);
+      }, 300);
+    } else {
+      setOpen(true);
+    }
+  };
 
   return (
     <WidgetContainer>
-      {open && <ChatWindow onClose={() => setOpen(false)} />}
-      <ToggleButton onClick={() => setOpen((prev) => !prev)} aria-label="Open chat">
+      {open && (
+        <ChatWindowWrapper isClosing={isClosing}>
+          <ChatWindow onClose={handleToggle} />
+        </ChatWindowWrapper>
+      )}
+      <ToggleButton onClick={handleToggle} aria-label="Toggle chat">
         {FaComments({ size: 24 })}
-        </ToggleButton>
+      </ToggleButton>
     </WidgetContainer>
   );
 };

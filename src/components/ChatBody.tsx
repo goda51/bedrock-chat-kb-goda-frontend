@@ -19,12 +19,12 @@ interface ChatBodyProps {
 
 const Body = styled.div`
   flex: 1;
-  padding: 18px 14px 12px 14px;
-  background: #f3f4f6;
+  padding: 20px 16px 14px 16px;
+  background: #f5f7fa;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
   scrollbar-width: thin;
   scrollbar-color: #a5b4fc #f3f4f6;
 
@@ -44,30 +44,36 @@ const bubbleIn = keyframes`
 
 const Bubble = styled.div<{ sender: 'user' | 'bot' }>`
   align-self: ${({ sender }) => (sender === 'user' ? 'flex-end' : 'flex-start')};
-  background: ${({ sender }) => (sender === 'user' ? '#4f46e5' : '#fff')};
-  color: ${({ sender }) => (sender === 'user' ? '#fff' : '#222')};
-  border-radius: 18px;
-  padding: 10px 16px;
-  max-width: 75%;
+  background: ${({ sender }) => (sender === 'user' ? 'linear-gradient(135deg, #4f46e5 0%, #6366f1 100%)' : '#fff')};
+  color: ${({ sender }) => (sender === 'user' ? '#fff' : '#333')};
+  border-radius: ${({ sender }) => (sender === 'user' ? '18px 18px 4px 18px' : '18px 18px 18px 4px')};
+  padding: 12px 18px;
+  max-width: 78%;
   font-size: 1rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
   margin-bottom: 2px;
-  animation: ${bubbleIn} 0.22s cubic-bezier(0.4,0,0.2,1);
+  animation: ${bubbleIn} 0.3s cubic-bezier(0.15, 1, 0.3, 1);
   white-space: pre-wrap;
+  transition: transform 0.2s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+  }
 `;
 
 const Typing = styled.div`
   align-self: flex-start;
   color: #6d7280;
-  font-size: 0.98rem;
-  padding: 6px 16px;
+  font-size: 1rem;
+  padding: 8px 18px;
   background: #e0e7ff;
-  border-radius: 18px;
+  border-radius: 18px 18px 18px 4px;
   margin-bottom: 2px;
-  min-width: 60px;
+  min-width: 65px;
   display: flex;
   align-items: center;
   gap: 6px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
 `;
 
 const Dot = styled.span`
@@ -86,10 +92,15 @@ const Dot = styled.span`
 `;
 
 const TableContainer = styled.div`
-  margin-top: 8px;
+  margin-top: 12px;
   overflow-x: auto;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  transition: transform 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-3px);
+  }
 `;
 
 const Table = styled.table`
@@ -97,26 +108,34 @@ const Table = styled.table`
   border-collapse: collapse;
   background: #fff;
   font-size: 0.9rem;
+  overflow: hidden;
 `;
 
 const TableTitle = styled.h3`
-  margin: 0 0 8px 0;
-  font-size: 1rem;
+  margin: 0 0 10px 0;
+  font-size: 1.1rem;
   color: #4f46e5;
+  font-weight: 600;
 `;
 
 const Th = styled.th`
-  background: #4f46e5;
+  background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
   color: #fff;
-  padding: 8px 12px;
+  padding: 10px 14px;
   text-align: left;
   border: 1px solid #e5e7eb;
+  font-weight: 500;
 `;
 
 const Td = styled.td`
-  padding: 8px 12px;
+  padding: 10px 14px;
   border: 1px solid #e5e7eb;
   text-align: left;
+  transition: background-color 0.15s ease;
+  
+  tr:hover & {
+    background-color: #f5f7fa;
+  }
 `;
 
 const renderMarkdown = (text: string) => {
