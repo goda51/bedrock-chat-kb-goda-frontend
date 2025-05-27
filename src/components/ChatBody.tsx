@@ -1,10 +1,12 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled, { keyframes } from 'styled-components';
+import { FaTimes } from 'react-icons/fa';
 
 export interface Message {
   id: string;
   sender: 'user' | 'bot';
   text: string;
+  image?: string;
   table?: {
     reportTitle: string;
     columns: string[];
@@ -138,54 +140,165 @@ const Td = styled.td`
   }
 `;
 
+const ModalOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: fadeIn 0.2s ease-out;
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+`;
+
+const ModalContent = styled.div`
+  position: relative;
+  width: 900px;
+  height: 550px;
+  max-width: 90vw;
+  max-height: 90vh;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  animation: scaleIn 0.2s ease-out;
+
+  @keyframes scaleIn {
+    from { transform: scale(0.95); }
+    to { transform: scale(1); }
+  }
+`;
+
+const ModalImage = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 8px;
+`;
+
+const CloseModalButton = styled.button`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  
+  &:hover {
+    background: rgba(0, 0, 0, 0.7);
+  }
+`;
+
+const MessageImage = styled.img`
+  max-width: 200px;
+  max-height: 200px;
+  border-radius: 12px;
+  margin: 8px 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  
+  &:hover {
+    transform: scale(1.02);
+  }
+`;
+
 const renderMarkdown = (text: string) => {
   return text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
 };
 
 const ChatBody: React.FC<ChatBodyProps> = ({ messages, typing }) => {
   const bottomRef = useRef<HTMLDivElement>(null);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, typing]);
 
+  const handleImageClick = (imageUrl: string) => {
+    if (selectedImage === imageUrl) {
+      setSelectedImage(null);
+    } else {
+      setSelectedImage(imageUrl);
+    }
+  };
+
   return (
-    <Body>
-      {messages.map((msg) => (
-        <Bubble key={msg.id} sender={msg.sender}>
-          <div dangerouslySetInnerHTML={{ __html: renderMarkdown(msg.text) }} />
-          {msg.table && (
-            <TableContainer>
-              <TableTitle>{msg.table.reportTitle}</TableTitle>
-              <Table>
-                <thead>
-                  <tr>
-                    {msg.table.columns.map((col, i) => (
-                      <Th key={i}>{col}</Th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {msg.table.rows.map((row, i) => (
-                    <tr key={i}>
-                      {msg.table!.columns.map((col, j) => (
-                        <Td key={j}>{row[col]}</Td>
+    <>
+      <Body>
+        {messages.map((msg) => (
+          <Bubble key={msg.id} sender={msg.sender}>
+            {msg.image && (
+              <MessageImage 
+                src={msg.image} 
+                alt="Message attachment" 
+                onClick={() => handleImageClick(msg.image!)}
+              />
+            )}
+            <div dangerouslySetInnerHTML={{ __html: renderMarkdown(msg.text) }} />
+            {msg.table && (
+              <TableContainer>
+                <TableTitle>{msg.table.reportTitle}</TableTitle>
+                <Table>
+                  <thead>
+                    <tr>
+                      {msg.table.columns.map((col, i) => (
+                        <Th key={i}>{col}</Th>
                       ))}
                     </tr>
-                  ))}
-                </tbody>
-              </Table>
-            </TableContainer>
-          )}
-        </Bubble>
-      ))}
-      {typing && (
-        <Typing>
-          <Dot /> <Dot /> <Dot />
-        </Typing>
+                  </thead>
+                  <tbody>
+                    {msg.table.rows.map((row, i) => (
+                      <tr key={i}>
+                        {msg.table!.columns.map((col, j) => (
+                          <Td key={j}>{row[col]}</Td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+              </TableContainer>
+            )}
+          </Bubble>
+        ))}
+        {typing && (
+          <Typing>
+            <Dot /> <Dot /> <Dot />
+          </Typing>
+        )}
+        <div ref={bottomRef} />
+      </Body>
+      {selectedImage && (
+        <ModalOverlay>
+          <ModalContent>
+            <CloseModalButton onClick={() => setSelectedImage(null)} aria-label="Close preview">
+              {FaTimes({ size: 16 })}
+            </CloseModalButton>
+            <ModalImage 
+              src={selectedImage} 
+              alt="Image preview" 
+              onClick={() => setSelectedImage(null)}
+              style={{ cursor: 'pointer' }}
+            />
+          </ModalContent>
+        </ModalOverlay>
       )}
-      <div ref={bottomRef} />
-    </Body>
+    </>
   );
 };
 

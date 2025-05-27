@@ -84,6 +84,51 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ onClose }) => {
     }
   };
 
+  const handleSendImage = async (file: File, model: string, caption?: string) => {
+    setTyping(true);
+    const imageUrl = URL.createObjectURL(file);
+    const userMsg: Message = {
+      id: Date.now() + '-user-img',
+      sender: 'user',
+      text: caption ? caption : '',
+      image: imageUrl
+    };
+    setMessages((msgs) => [...msgs, userMsg]);
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+      formData.append('model', model);
+      formData.append('messages', JSON.stringify(apiMessages));
+      if (caption) formData.append('user_message', caption);
+      const response = await fetch('https://iimvj6vkh7.execute-api.us-west-2.amazonaws.com/bedrock-chatbot-image-processing-dev', {
+        method: 'POST',
+        body: formData,
+      });
+      const result = await response.json();
+      const botResponse = result.data?.internal_answer || result.data?.external_answer || 'Sorry, I could not process your image.';
+      setMessages((msgs) => [
+        ...msgs,
+        {
+          id: Date.now() + '-bot-img',
+          sender: 'bot',
+          text: botResponse,
+          table: result.data?.table || undefined,
+        },
+      ]);
+      if ((result.data?.internal_answer && result.data.internal_answer !== "") || 
+          (result.data?.external_answer && result.data.external_answer !== "")) {
+        setApiMessages(result.data.messages || []);
+      }
+    } catch (error) {
+      setMessages((msgs) => [
+        ...msgs,
+        { id: Date.now() + '-bot-img', sender: 'bot', text: 'Sorry, there was an error processing your image.' },
+      ]);
+    } finally {
+      setTyping(false);
+    }
+  };
+
   const handleClose = () => {
     setApiMessages([]);
     onClose();
@@ -93,7 +138,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ onClose }) => {
     <WindowContainer>
       <ChatHeader onClose={handleClose} />
       <ChatBody messages={messages} typing={typing} />
-      <ChatInput onSend={handleSend} disabled={typing} />
+      <ChatInput onSend={handleSend} onSendImage={handleSendImage} disabled={typing} />
     </WindowContainer>
   );
 };
