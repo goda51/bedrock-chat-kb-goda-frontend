@@ -15,6 +15,12 @@ const WidgetContainer = styled.div`
   bottom: 24px;
   right: 24px;
   z-index: 1000;
+
+  @media (max-width: 600px) {
+    bottom: 0;
+    right: 0;
+    width: 100vw;
+  }
 `;
 
 const ToggleButton = styled.button`
@@ -34,6 +40,11 @@ const ToggleButton = styled.button`
   animation: ${pulse} 0.5s infinite ease-in-out;
   &:hover {
     background: #6366f1;
+  }
+  @media (max-width: 600px) {
+    width: 60px;
+    height: 60px;
+    font-size: 1.5rem;
   }
 `;
 
