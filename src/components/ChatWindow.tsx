@@ -106,7 +106,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ onClose }) => {
         }),
       });
       const result = await response.json();
-      const botResponse = result.data.internal_answer || result.data.external_answer || '抱歉，这个问题我无法处理，也许可以帮您转移到人工客服进行咨询【<a href="https://www.baidu.com">联系人工客服</a>】';
+      const botResponse = result.data.internal_answer || result.data.external_answer || '抱歉，这个问题我无法处理，也许可以帮您转移到人工客服进行咨询【<a href="https://www.baidu.com" target="_blank">联系人工客服</a>】';
       setMessages((msgs) => [
         ...msgs,
         { 
@@ -126,7 +126,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ onClose }) => {
       console.error('Error calling API:', error);
       setMessages((msgs) => [
         ...msgs,
-        { id: Date.now() + '-bot', sender: 'bot', text: '抱歉，这个问题我无法处理，也许可以帮您转移到人工客服进行咨询【<a href="https://www.baidu.com">联系人工客服</a>】' }
+        { id: Date.now() + '-bot', sender: 'bot', text: '抱歉，这个问题我无法处理，也许可以帮您转移到人工客服进行咨询【<a href="https://www.baidu.com" target="_blank">联系人工客服</a>】', timestamp: getCurrentTime() }
       ]);
     } finally {
       setTyping(false);
@@ -155,7 +155,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ onClose }) => {
         body: formData,
       });
       const result = await response.json();
-      const botResponse = result.data?.internal_answer || result.data?.external_answer || '抱歉，这个问题我无法处理，也许可以帮您转移到人工客服进行咨询【<a href="https://www.baidu.com">联系人工客服</a>】';
+      const botResponse = result.data?.internal_answer || result.data?.external_answer || '抱歉，这个问题我无法处理，也许可以帮您转移到人工客服进行咨询【<a href="https://www.baidu.com" target="_blank">联系人工客服</a>】';
       setMessages((msgs) => [
         ...msgs,
         {
@@ -174,7 +174,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ onClose }) => {
     } catch (error) {
       setMessages((msgs) => [
         ...msgs,
-        { id: Date.now() + '-bot-img', sender: 'bot', text: '抱歉，这个问题我无法处理，也许可以帮您转移到人工客服进行咨询【<a href="https://www.baidu.com">联系人工客服</a>】' },
+        { id: Date.now() + '-bot-img', sender: 'bot', text: '抱歉，这个问题我无法处理，也许可以帮您转移到人工客服进行咨询【<a href="https://www.baidu.com" target="_blank">联系人工客服</a>】', timestamp: getCurrentTime() },
       ]);
     } finally {
       setTyping(false);
