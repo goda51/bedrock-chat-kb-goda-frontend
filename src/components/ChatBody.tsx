@@ -18,6 +18,7 @@ export interface Message {
     overall_tone: string;
     emoji: string;
   };
+  timestamp?: string;
 }
 
 interface ChatBodyProps {

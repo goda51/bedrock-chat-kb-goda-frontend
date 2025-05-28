@@ -84,8 +84,13 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ onClose }) => {
   const [isResizing, setIsResizing] = useState(false);
   const startPos = useRef<{ x: number; y: number; width: number; height: number } | null>(null);
 
+  function getCurrentTime() {
+    const now = new Date();
+    return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+  }
+
   const handleSend = async (text: string) => {
-    const userMsg: Message = { id: Date.now() + '-user', sender: 'user', text };
+    const userMsg: Message = { id: Date.now() + '-user', sender: 'user', text, timestamp: getCurrentTime() };
     setMessages((msgs) => [...msgs, userMsg]);
     setTyping(true);
 
@@ -110,6 +115,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ onClose }) => {
           text: botResponse,
           table: result.data.table || undefined,
           emotional_analysis: result.data.emotional_analysis || undefined,
+          timestamp: getCurrentTime(),
         }
       ]);
       if ((result.data.internal_answer && result.data.internal_answer !== "") || 
@@ -134,7 +140,8 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ onClose }) => {
       id: Date.now() + '-user-img',
       sender: 'user',
       text: caption ? caption : '',
-      image: imageUrl
+      image: imageUrl,
+      timestamp: getCurrentTime(),
     };
     setMessages((msgs) => [...msgs, userMsg]);
     try {
@@ -157,6 +164,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ onClose }) => {
           text: botResponse,
           table: result.data?.table || undefined,
           emotional_analysis: result.data?.emotional_analysis || undefined,
+          timestamp: getCurrentTime(),
         },
       ]);
       if ((result.data?.internal_answer && result.data.internal_answer !== "") || 
