@@ -254,6 +254,25 @@ const AnswerBlock = styled.div`
   line-height: 1.7;
 `;
 
+const TypewriterText = styled.div<{ isTyping: boolean }>`
+  position: absolute;
+  width: 100%;
+  visibility: ${({ isTyping }) => isTyping ? 'visible' : 'hidden'};
+`;
+
+const MessageContent = styled.div`
+  position: relative;
+  min-height: 1.7em;
+`;
+
+const TimeStamp = styled.div`
+  font-size: 0.82rem;
+  color: #9ca3af;
+  text-align: right;
+  margin-top: 4px;
+  margin-bottom: -2px;
+`;
+
 const renderMarkdown = (text: string) => {
   return text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
 };
@@ -261,10 +280,36 @@ const renderMarkdown = (text: string) => {
 const ChatBody: React.FC<ChatBodyProps> = ({ messages, typing }) => {
   const bottomRef = useRef<HTMLDivElement>(null);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [displayedText, setDisplayedText] = useState<{ [key: string]: string }>({});
+  const [isTyping, setIsTyping] = useState<{ [key: string]: boolean }>({});
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, typing]);
+
+  useEffect(() => {
+    messages.forEach((msg) => {
+      if (msg.sender === 'bot' && !displayedText[msg.id]) {
+        setIsTyping(prev => ({ ...prev, [msg.id]: true }));
+        let currentText = '';
+        const text = msg.text;
+        let currentIndex = 0;
+
+        const interval = setInterval(() => {
+          if (currentIndex < text.length) {
+            currentText += text[currentIndex];
+            setDisplayedText(prev => ({ ...prev, [msg.id]: currentText }));
+            currentIndex++;
+          } else {
+            clearInterval(interval);
+            setIsTyping(prev => ({ ...prev, [msg.id]: false }));
+          }
+        }, 30);
+
+        return () => clearInterval(interval);
+      }
+    });
+  }, [messages]);
 
   const handleImageClick = (imageUrl: string) => {
     if (selectedImage === imageUrl) {
@@ -298,7 +343,15 @@ const ChatBody: React.FC<ChatBodyProps> = ({ messages, typing }) => {
             {msg.sender === 'bot' ? (
               <AnswerBlock>
                 <div>🤖 <b>AI Assistant Answer</b></div>
-                <div dangerouslySetInnerHTML={{ __html: renderMarkdown(msg.text) }} />
+                <MessageContent>
+                  <TypewriterText isTyping={isTyping[msg.id]}>
+                    <div dangerouslySetInnerHTML={{ __html: renderMarkdown(displayedText[msg.id] || '') }} />
+                  </TypewriterText>
+                  <div 
+                    style={{ visibility: isTyping[msg.id] ? 'hidden' : 'visible' }}
+                    dangerouslySetInnerHTML={{ __html: renderMarkdown(msg.text) }} 
+                  />
+                </MessageContent>
               </AnswerBlock>
             ) : (
               <div dangerouslySetInnerHTML={{ __html: renderMarkdown(msg.text) }} />
@@ -326,6 +379,7 @@ const ChatBody: React.FC<ChatBodyProps> = ({ messages, typing }) => {
                 </Table>
               </TableContainer>
             )}
+            {msg.timestamp && <TimeStamp>{msg.timestamp}</TimeStamp>}
           </Bubble>
         ))}
         {typing && (
