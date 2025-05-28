@@ -12,6 +12,12 @@ export interface Message {
     columns: string[];
     rows: Record<string, string>[];
   };
+  emotional_analysis?: {
+    main_emotion: string;
+    intensity: number;
+    overall_tone: string;
+    emoji: string;
+  };
 }
 
 interface ChatBodyProps {
@@ -218,6 +224,35 @@ const MessageImage = styled.img`
   }
 `;
 
+const EmotionInfo = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.98rem;
+  color: #6366f1;
+  margin-top: 4px;
+  opacity: 0.85;
+`;
+
+const EmotionBlock = styled.div`
+  background: #f3f4f6;
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 8px;
+  font-size: 0.98rem;
+  color: #374151;
+  box-shadow: 0 1px 4px rgba(99, 102, 241, 0.06);
+  line-height: 1.6;
+`;
+
+const AnswerBlock = styled.div`
+  margin-top: 2px;
+  font-size: 1.05rem;
+  color: #222;
+  font-weight: 500;
+  line-height: 1.7;
+`;
+
 const renderMarkdown = (text: string) => {
   return text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
 };
@@ -250,7 +285,23 @@ const ChatBody: React.FC<ChatBodyProps> = ({ messages, typing }) => {
                 onClick={() => handleImageClick(msg.image!)}
               />
             )}
-            <div dangerouslySetInnerHTML={{ __html: renderMarkdown(msg.text) }} />
+            {msg.sender === 'bot' && msg.emotional_analysis && (
+              <EmotionBlock>
+                <div>🤖 <b>Emotion Analysis</b></div>
+                <div>Main emotion: {msg.emotional_analysis.main_emotion}</div>
+                <div>Intensity: {msg.emotional_analysis.intensity}/10</div>
+                <div>Overall tone: {msg.emotional_analysis.overall_tone}</div>
+                <div>Emoji: {msg.emotional_analysis.emoji}</div>
+              </EmotionBlock>
+            )}
+            {msg.sender === 'bot' ? (
+              <AnswerBlock>
+                <div>🤖 <b>AI Assistant Answer</b></div>
+                <div dangerouslySetInnerHTML={{ __html: renderMarkdown(msg.text) }} />
+              </AnswerBlock>
+            ) : (
+              <div dangerouslySetInnerHTML={{ __html: renderMarkdown(msg.text) }} />
+            )}
             {msg.table && (
               <TableContainer>
                 <TableTitle>{msg.table.reportTitle}</TableTitle>
