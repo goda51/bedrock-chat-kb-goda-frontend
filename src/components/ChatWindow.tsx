@@ -75,7 +75,7 @@ interface ChatWindowProps {
 
 const ChatWindow: React.FC<ChatWindowProps> = ({ onClose }) => {
   const [messages, setMessages] = useState<Message[]>([
-    { id: 'init', sender: 'bot', text: '您好！请问有什么可以帮您吗？' }
+    { id: 'init', sender: 'bot', text: '您好！请问有什么可以帮您吗？', timestamp: getCurrentTime() }
   ]);
   const [typing, setTyping] = useState(false);
   const [apiMessages, setApiMessages] = useState<any[]>([]);
