@@ -84,6 +84,8 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ onClose }) => {
   const [isResizing, setIsResizing] = useState(false);
   const startPos = useRef<{ x: number; y: number; width: number; height: number } | null>(null);
 
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || '';
+
   function getCurrentTime() {
     const now = new Date();
     return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
@@ -95,7 +97,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ onClose }) => {
     setTyping(true);
 
     try {
-      const response = await fetch('https://iimvj6vkh7.execute-api.us-west-2.amazonaws.com/bedrock-chatbot-kb-dev', {
+      const response = await fetch(`${API_BASE_URL}/bedrock-chatbot-kb-dev`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -150,7 +152,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ onClose }) => {
       formData.append('model', model);
       formData.append('messages', JSON.stringify(apiMessages));
       if (caption) formData.append('user_message', caption);
-      const response = await fetch('https://iimvj6vkh7.execute-api.us-west-2.amazonaws.com/bedrock-chatbot-image-processing-dev', {
+      const response = await fetch(`${API_BASE_URL}/bedrock-chatbot-image-processing-test`, {
         method: 'POST',
         body: formData,
       });
