@@ -219,6 +219,8 @@ const modelOptions = [
   { value: '1', label: 'Claude 3.7 Sonnet' },
   { value: '2', label: 'Claude 3.5 Sonnet' },
   { value: '3', label: 'Claude 3.5 Sonnet v2' },
+  { value: '6', label: 'Claude 4 Opus' },
+  { value: '7', label: 'Claude 4 Sonnet' },
   { value: '4', label: 'Amazon Nova Pro' },
   { value: '5', label: 'Llama 4 Maverick 17B Instruct' },
 ];
