@@ -85,6 +85,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ onClose }) => {
   const startPos = useRef<{ x: number; y: number; width: number; height: number } | null>(null);
 
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || '';
+  const CUSTOMER_SERVICE_URL = process.env.REACT_APP_CUSTOMER_SERVICE_URL || '';
 
   function getCurrentTime() {
     const now = new Date();
@@ -108,7 +109,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ onClose }) => {
         }),
       });
       const result = await response.json();
-      const botResponse = result.data.internal_answer || result.data.external_answer || '抱歉，这个问题我无法处理，也许可以帮您转移到人工客服进行咨询【<a href="https://www.baidu.com" target="_blank">联系人工客服</a>】';
+      const botResponse = result.data.internal_answer || result.data.external_answer || `抱歉，这个问题我无法处理，也许可以帮您转移到人工客服进行咨询【<a href="${CUSTOMER_SERVICE_URL}" target="_blank">联系人工客服</a>】`;
       setMessages((msgs) => [
         ...msgs,
         { 
@@ -128,7 +129,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ onClose }) => {
       console.error('Error calling API:', error);
       setMessages((msgs) => [
         ...msgs,
-        { id: Date.now() + '-bot', sender: 'bot', text: '抱歉，这个问题我无法处理，也许可以帮您转移到人工客服进行咨询【<a href="https://www.baidu.com" target="_blank">联系人工客服</a>】', timestamp: getCurrentTime() }
+        { id: Date.now() + '-bot', sender: 'bot', text: `抱歉，这个问题我无法处理，也许可以帮您转移到人工客服进行咨询【<a href="${CUSTOMER_SERVICE_URL}" target="_blank">联系人工客服</a>】`, timestamp: getCurrentTime() }
       ]);
     } finally {
       setTyping(false);
@@ -152,12 +153,12 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ onClose }) => {
       formData.append('model', model);
       formData.append('messages', JSON.stringify(apiMessages));
       if (caption) formData.append('user_message', caption);
-      const response = await fetch(`${API_BASE_URL}/bedrock-chatbot-image-processing-test`, {
+      const response = await fetch(`${API_BASE_URL}/bedrock-chatbot-image-processing-dev`, {
         method: 'POST',
         body: formData,
       });
       const result = await response.json();
-      const botResponse = result.data?.internal_answer || result.data?.external_answer || '抱歉，这个问题我无法处理，也许可以帮您转移到人工客服进行咨询【<a href="https://www.baidu.com" target="_blank">联系人工客服</a>】';
+      const botResponse = result.data?.internal_answer || result.data?.external_answer || `抱歉，这个问题我无法处理，也许可以帮您转移到人工客服进行咨询【<a href="${CUSTOMER_SERVICE_URL}" target="_blank">联系人工客服</a>】`;
       setMessages((msgs) => [
         ...msgs,
         {
@@ -176,7 +177,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ onClose }) => {
     } catch (error) {
       setMessages((msgs) => [
         ...msgs,
-        { id: Date.now() + '-bot-img', sender: 'bot', text: '抱歉，这个问题我无法处理，也许可以帮您转移到人工客服进行咨询【<a href="https://www.baidu.com" target="_blank">联系人工客服</a>】', timestamp: getCurrentTime() },
+        { id: Date.now() + '-bot-img', sender: 'bot', text: `抱歉，这个问题我无法处理，也许可以帮您转移到人工客服进行咨询【<a href="${CUSTOMER_SERVICE_URL}" target="_blank">联系人工客服</a>】`, timestamp: getCurrentTime() },
       ]);
     } finally {
       setTyping(false);
