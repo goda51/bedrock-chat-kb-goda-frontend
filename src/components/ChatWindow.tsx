@@ -84,7 +84,8 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ onClose }) => {
   const [isResizing, setIsResizing] = useState(false);
   const startPos = useRef<{ x: number; y: number; width: number; height: number } | null>(null);
 
-  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || '';
+  const CHAT_API_BASE_URL = process.env.REACT_APP_CHAT_API_BASE_URL || '';
+  const CHAT_IMAGE_API_BASE_URL = process.env.REACT_APP_CHAT_IMAGE_API_BASE_URL || '';
   const CUSTOMER_SERVICE_URL = process.env.REACT_APP_CUSTOMER_SERVICE_URL || '';
 
   function getCurrentTime() {
@@ -98,7 +99,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ onClose }) => {
     setTyping(true);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/bedrock-chatbot-kb-dev`, {
+      const response = await fetch(`${CHAT_API_BASE_URL}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -153,7 +154,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ onClose }) => {
       formData.append('model', model);
       formData.append('messages', JSON.stringify(apiMessages));
       if (caption) formData.append('user_message', caption);
-      const response = await fetch(`${API_BASE_URL}/bedrock-chatbot-image-processing-dev`, {
+      const response = await fetch(`${CHAT_IMAGE_API_BASE_URL}`, {
         method: 'POST',
         body: formData,
       });
